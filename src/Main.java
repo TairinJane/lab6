@@ -20,26 +20,26 @@ public class Main {
 
     /**
      * Queue to hold Clouds.
-     */
+     *//*
     private static PriorityBlockingQueue<Cloud> queue= new PriorityBlockingQueue<>();
-    /**
+    *//**
      * GSON library object to parse Json.
-     */
+     *//*
     private static Gson gson = new Gson();
-    /**
+    *//**
      * GSON library object to make pretty Json objects.
-     */
+     *//*
     private static Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();
-    /**
+    *//**
      * Field for holding date when app was opened.
-     */
+     *//*
     private static Date openTime = new Date();
 
-    /**
+    *//**
      * Removing from the collection all items equivalent to the given.
      *
      * @param jsonString json object you want to remove
-     */
+     *//*
     private static void removeAll(String jsonString) {
         try {
             Cloud cloud = gson.fromJson(jsonString, Cloud.class);
@@ -56,10 +56,10 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Removing from the collection one item equivalent to the given.
      * @param jsonString json object you want to remove
-     */
+     *//*
     private static void removeElement(String jsonString) {
         try {
             Cloud cloud = gson.fromJson(jsonString, Cloud.class);
@@ -74,16 +74,16 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Prints all elements in collection
-     */
+     *//*
     private static void show() {
         System.out.println(prettyGson.toJson(queue));
     }
 
-    /**
+    *//**
      * Removes first element in collection (with highest speed).
-     */
+     *//*
     private static void removeFirst() {
         Cloud element = queue.poll();
         if (element==null) {
@@ -96,9 +96,9 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Shows list of all commands.
-     */
+     *//*
     private static void help() {
         System.out.println("\nremove_all {element}: удалить из коллекции все элементы, эквивалентные заданному\n" +
                 "remove {element}: удалить элемент из коллекции по его значению\n" +
@@ -112,20 +112,20 @@ public class Main {
                 "\"color\": \"white\"}");
     }
 
-    /**
+    *//**
      * Shows information about collection.
-     */
+     *//*
     private static void info() {
         System.out.println("Collection size: "+ queue.size() +
                 "\nType: PriorityQueue" +
                 "\nOpen time: "+ openTime);
     }
 
-    /**
+    *//**
      * Imports all elements given in file.
      *
      * @param filePath path to file
-     */
+     *//*
     private static void importCollection(String filePath) {
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
             Type queueType = new TypeToken<PriorityQueue<Cloud>>(){}.getType();
@@ -145,11 +145,11 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Adds element in collection. If there is no element given, adds default element.
      *
      * @param jsonString json object you want to add
-     */
+     *//*
     private static void addElement(String jsonString) {
         try {
             Cloud cloud = gson.fromJson(jsonString, Cloud.class);
@@ -164,9 +164,9 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Void to save collection to 'outputCollection.txt'.
-     */
+     *//*
     private static void saveCollection() {
         try (PrintWriter pw = new PrintWriter(new File("outputCollection.txt"))) {
             pw.write(prettyGson.toJson(queue));
@@ -175,13 +175,13 @@ public class Main {
         }
     }
 
-    /**
+    *//**
      * Main void to run console app.
      * @param args console arguments to pass the path for file with collection.
-     */
+     *//*
     public static void main(String[] args) {
 
-        /*if (args.length != 0) {
+        if (args.length != 0) {
             importCollection(args[0]);
         } else {
             System.out.println("No collection given in command line to import");
@@ -190,7 +190,7 @@ public class Main {
         importCollection("outputCollection.txt");
         for (int i = 0; i<10; i++) {
             Cloud cloud = new Cloud();
-            cloud.setRider(new MumyTroll("Troll", ""+i, "_"+i));
+            cloud.setRider(new MumyTroll("Troll"));
             queue.add(cloud);
         }
 
@@ -199,21 +199,21 @@ public class Main {
         try (BufferedReader br = new BufferedReader(new InputStreamReader(System.in))) {
             String line;
             while ((line = br.readLine())!=null && !line.equals("exit")) {
-                    line = line.trim();
-                    String command = line.split(" ", 2)[0];
-                    String object;
-                    if (line.contains(" ")) {
-                        object = line.split(" ", 2)[1];
-                        switch (command) {
-                            case "remove_all": removeAll(object); break;
-                            case "remove": removeElement(object); break;
-                            case "import": importCollection(object); break;
-                            case "add": addElement(object); break;
-                            default:
-                                System.out.println("No such command. Write 'help' to see commands.");
-                        }
-                    } else
-                        switch (command) {
+                line = line.trim();
+                String command = line.split(" ", 2)[0];
+                String object;
+                if (line.contains(" ")) {
+                    object = line.split(" ", 2)[1];
+                    switch (command) {
+                        case "remove_all": removeAll(object); break;
+                        case "remove": removeElement(object); break;
+                        case "import": importCollection(object); break;
+                        case "add": addElement(object); break;
+                        default:
+                            System.out.println("No such command. Write 'help' to see commands.");
+                    }
+                } else
+                    switch (command) {
                         case "show": show(); break;
                         case "info": info(); break;
                         case "remove_first": removeFirst(); break;
@@ -222,8 +222,7 @@ public class Main {
                             System.out.println("No such command. Write 'help' to see commands.");
                     }
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Can't read this. Give me beautiful words.");
         }
 
@@ -233,7 +232,7 @@ public class Main {
             System.out.println("Collection was saved to 'outputCollection.txt'");
         } else {
             System.out.println("No permission to write 'outputCollection.txt'. Collection wasn't saved");
-        }*/
+        }
 
-    }
+    }*/
 }

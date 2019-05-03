@@ -1,13 +1,14 @@
+package collection;
+
 import java.io.Serializable;
 import java.util.Objects;
 
-abstract class Creature implements Serializable {
+final class MumyTroll implements Serializable {
+    private String name;
+    private String location;
+    private String mood;
 
-    protected String name;
-    protected String location;
-    protected String mood;
-
-    Creature(String name, String location, String mood) {
+    MumyTroll(String name, String location, String mood) {
         this.name = name;
         this.location = location;
         this.mood = mood;
@@ -33,29 +34,36 @@ abstract class Creature implements Serializable {
         this.mood = mood;
     }
 
-    abstract void think(String theme);
-
-    abstract void walk(String place);
-
     void say(String saying) {
-        System.out.println(name+" said: '"+saying+"'");
+        System.out.println(name + " said: '" + saying + "'");
     }
 
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Creature creature = (Creature) o;
+        MumyTroll creature = (MumyTroll) o;
         return (name.equals(creature.name));
     }
 
-    @Override
     public int hashCode() {
         return Objects.hash(name);
     }
 
-    @Override
     public String toString() {
         return name;
+    }
+
+    MumyTroll(String name) {
+        this(name, "forest", "normal");
+        //System.out.println(name+" appears in "+location);
+    }
+
+    void think(String theme) {
+        System.out.println(this.name + " is thinking about " + theme);
+    }
+
+    void walk(String place) {
+        location = place;
+        System.out.println(name+" is "+mood+"ly walking around "+location);
     }
 }
