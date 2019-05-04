@@ -1,5 +1,3 @@
-package collection;
-
 import java.io.Serializable;
 
 class Cloud implements Comparable<Cloud>, Serializable {
@@ -13,7 +11,7 @@ class Cloud implements Comparable<Cloud>, Serializable {
     private static int cloudCount = 0;
 
     Cloud() {
-        this("white", "collection.Cloud" + cloudCount++, 10, "Troll");
+        this("white", "Cloud" + cloudCount++, 10, "Troll");
     }
 
     Cloud(String color, String nickname, int speed, String trollName) {
@@ -31,7 +29,7 @@ class Cloud implements Comparable<Cloud>, Serializable {
     }
 
     Cloud(int speed) {
-        this("white", "collection.Cloud" + cloudCount++, speed, "Troll");
+        this("white", "Cloud" + cloudCount++, speed, "Troll");
     }
 
     int getX() {
@@ -78,7 +76,7 @@ class Cloud implements Comparable<Cloud>, Serializable {
         X = x;
         Y = y;
         Z = z;
-        System.out.println(String.format("collection.Cloud %s moved to (%d, %d, %d)",
+        System.out.println(String.format("Cloud %s moved to (%d, %d, %d)",
                 nickname, X, Y, Z));
     }
 
@@ -86,7 +84,7 @@ class Cloud implements Comparable<Cloud>, Serializable {
         X+=dx;
         Y+=dy;
         Z+=dz;
-        System.out.println(String.format("collection.Cloud %s moved on (%d, %d, %d) metres",
+        System.out.println(String.format("Cloud %s moved on (%d, %d, %d) metres",
                 nickname, X, Y, Z));
     }
 
@@ -106,7 +104,7 @@ class Cloud implements Comparable<Cloud>, Serializable {
 
     @Override
     public String toString() {
-        return "collection.Cloud{" +
+        return "Cloud{" +
                 "X=" + X +
                 ", Y=" + Y +
                 ", Z=" + Z +

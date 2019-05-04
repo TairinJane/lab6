@@ -1,17 +1,9 @@
-package collection;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.Date;
 import java.util.concurrent.PriorityBlockingQueue;
 
@@ -36,8 +28,10 @@ class CollectionCommander {
     }
 
     static String addElement(Cloud cloud) {
-        queue.add(cloud);
-        return "Element was added";
+        if (queue.add(cloud)) {
+            return "Element was added";
+        }
+        return "Element wasn't added";
     }
 
     static String show() {
@@ -73,23 +67,13 @@ class CollectionCommander {
     }
 
     //TODO: IMPORT
-    /*static void importCollection(String filePath) {
-        try {
-            Type queueType = new TypeToken<PriorityQueue<Cloud>>() {
-            }.getType();
-            String line;
-            String fileLines = String.join("\n", Files.readAllLines(Paths.get(filePath)));
-            PriorityQueue<Cloud> importQueue = gson.fromJson(fileLines, queueType);
-            *//*for (Cloud cloud : importQueue) {
-                queue.add(cloud);
-            }*//*
-            Collections.addAll(importQueue);
+    static String importCollection(PriorityBlockingQueue<Cloud> importQueue) {
+        if (queue.addAll(importQueue)) {
             saveCollection();
-            System.out.println("All elements imported in collection");
-        } catch (IOException e) {
-            System.out.println("No such file!");
+            return "All elements imported in collection";
         }
-    }*/
+        return "Elements wasn't imported";
+    }
 
     static void saveCollection() {
         try (PrintWriter pw = new PrintWriter(new File("outputCollection.txt"))) {

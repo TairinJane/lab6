@@ -1,15 +1,16 @@
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.*;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
 public class NIOServer implements Runnable {
     private final int port;
     private ServerSocketChannel ssc;
     private Selector selector;
-    private ByteBuffer buf = ByteBuffer.allocate(256);
     private final ByteBuffer welcomeBuf = ByteBuffer.wrap("Successfully connected to Server\n".getBytes());
 
     NIOServer(int port) throws IOException {
@@ -34,9 +35,15 @@ public class NIOServer implements Runnable {
                 while (iter.hasNext()) {
                     key = iter.next();
                     iter.remove();
-
-                    if (key.isAcceptable()) acceptClient(key);
-                    if (key.isReadable()) readInput(key);
+                    if (!key.isValid()) key.cancel();
+                    if (key.isAcceptable()) {
+                        System.out.println("Accepting new client");
+                        acceptClient(key);
+                    }
+                    if (key.isReadable()) {
+                        System.out.println("Reading input");
+                        readInput(key);
+                    }
                 }
             }
         } catch (IOException e) {
@@ -46,48 +53,25 @@ public class NIOServer implements Runnable {
     }
 
     private void acceptClient(SelectionKey key) throws IOException {
-        SocketChannel sc = ((ServerSocketChannel) key.channel()).accept();
-        String address = (new StringBuilder(sc.socket().getInetAddress().toString())).append(":").append(sc.socket().getPort()).toString();
-        sc.configureBlocking(false);
-        sc.register(selector, SelectionKey.OP_READ, address);
-        sc.write(welcomeBuf);
-        welcomeBuf.rewind();
-        System.out.println("accepted connection from: " + address);
+        // Runnable acceptClient = () -> {
+        try {
+            ServerSocketChannel ssc = (ServerSocketChannel) key.channel();
+            SocketChannel sc = ssc.accept();
+            sc.configureBlocking(false);
+            sc.register(selector, SelectionKey.OP_READ);
+            sc.write(welcomeBuf);
+            welcomeBuf.rewind();
+            System.out.println("Accepted new client");
+        } catch (IOException e) {
+            System.out.println("IO Exception while connecting new Client");
+        }
+        //};
+        // new Thread(acceptClient).start();
     }
 
     private void readInput(SelectionKey key) throws IOException {
-        SocketChannel ch = (SocketChannel) key.channel();
-        DataInputStream in = new DataInputStream(Channels.newInputStream(ch));
-        String input = in.readUTF();
-        /*try {
-            collection.Cloud cloud = (collection.Cloud) in.readObject();
-        } catch (ClassNotFoundException e) {
-            System.out.println("Class of given object not found");
-        }*/
+        new Thread(new Receiver(key)).start();
 
-
-//        StringBuilder sb = new StringBuilder();
-//
-//        buf.clear();
-//        int read = 0;
-//        while( (read = ch.read(buf)) > 0 ) {
-//            buf.flip();
-//            byte[] bytes = new byte[buf.limit()];
-//            buf.get(bytes);
-//            sb.append(new String(bytes));
-//            buf.clear();
-//        }
-//        String msg;
-//        if(read<0) {
-//            msg = key.attachment()+" left the chat.\n";
-//            ch.close();
-//        }
-//        else {
-//            msg = key.attachment()+": "+sb.toString();
-//        }
-//
-//        System.out.println(msg);
-//        broadcast(msg);
     }
 
     private void broadcast(String msg) throws IOException {
@@ -102,7 +86,7 @@ public class NIOServer implements Runnable {
     }
 
     public static void main(String[] args) throws IOException {
-        NIOServer server = new NIOServer(10523);
+        NIOServer server = new NIOServer(1600);
         (new Thread(server)).start();
     }
 
