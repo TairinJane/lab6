@@ -17,11 +17,13 @@ class CollectionCommander {
         while (queue.contains(cloud)) {
             queue.remove(cloud);
         }
+        saveCollection();
         return "Elements like this were removed";
     }
 
     static String removeElement(Cloud cloud) {
         if (queue.remove(cloud)) {
+            saveCollection();
             return "Element was removed";
         }
         return "No such element";
@@ -29,17 +31,20 @@ class CollectionCommander {
 
     static String addElement(Cloud cloud) {
         if (queue.add(cloud)) {
+            saveCollection();
             return "Element was added";
         }
         return "Element wasn't added";
     }
 
     static String show() {
+        if (queue.isEmpty()) return "Queue is empty";
         return prettyGson.toJson(queue);
     }
 
     static String removeFirst() {
         Cloud element = queue.poll();
+        saveCollection();
         if (element == null) {
             return "There are no elements in queue";
         } else {
@@ -55,7 +60,7 @@ class CollectionCommander {
                 "info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.)\n" +
                 "import {String path}: добавить в коллекцию все данные из файла\n" +
                 "add {element}: добавить новый элемент в коллекцию" +
-                "\n\nexit: выход из программы" +
+                "\n\nquit: выход из программы" +
                 "\n\n{element} выглядит как {\"nickname\": \"Cloud0\", \"speed\": 10, " +
                 "\"color\": \"white\"}";
     }
@@ -66,7 +71,6 @@ class CollectionCommander {
                 "\nOpen time: " + openTime;
     }
 
-    //TODO: IMPORT
     static String importCollection(PriorityBlockingQueue<Cloud> importQueue) {
         if (queue.addAll(importQueue)) {
             saveCollection();
@@ -75,7 +79,7 @@ class CollectionCommander {
         return "Elements wasn't imported";
     }
 
-    static void saveCollection() {
+    private static void saveCollection() {
         try (PrintWriter pw = new PrintWriter(new File("outputCollection.txt"))) {
             pw.write(prettyGson.toJson(queue));
         } catch (FileNotFoundException e) {

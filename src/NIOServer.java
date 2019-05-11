@@ -70,7 +70,7 @@ public class NIOServer implements Runnable {
     }
 
     private void readInput(SelectionKey key) throws IOException {
-        new Thread(new Receiver(key)).start();
+        //new Thread(new Receiver(key)).start();
 
     }
 

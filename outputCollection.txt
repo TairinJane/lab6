@@ -1,0 +1,15 @@
+[
+  {
+    "nickname": "Cloud0",
+    "speed": 10,
+    "color": "white",
+    "X": 0,
+    "Y": 0,
+    "Z": 0,
+    "rider": {
+      "name": "Troll",
+      "location": "forest",
+      "mood": "normal"
+    }
+  }
+]

@@ -6,7 +6,8 @@ public enum Commands {
     SHOW(0),
     INFO(0),
     REMOVE_FIRST(0),
-    HELP(0);
+    HELP(0),
+    QUIT(0);
 
     int commandType;
 
