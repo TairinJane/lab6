@@ -80,7 +80,7 @@ public class Receiver implements Runnable {
                     String fileLines;
                     try {
                         fileLines = in.readUTF();
-                        System.out.println("file: " + fileLines);
+                        //System.out.println("file: " + fileLines);
                         Type queueType = new TypeToken<PriorityBlockingQueue<Cloud>>() {
                         }.getType();
                         PriorityBlockingQueue<Cloud> queue = gson.fromJson(fileLines, queueType);
