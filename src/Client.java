@@ -17,8 +17,10 @@ public class Client implements Runnable {
     private static Gson gson = new Gson();
     private Socket socket;
     private Scanner console;
+    private final int PORT;
 
     Client(int port) {
+        this.PORT = port;
         boolean connected = false;
         while (!connected) {
             try {
@@ -173,7 +175,7 @@ public class Client implements Runnable {
         boolean connected = false;
         while (!connected) {
             try {
-                this.socket = new Socket("localhost", 1600);
+                this.socket = new Socket("localhost", PORT);
                 connected = true;
                 System.out.println("Connected to server on port 1600");
                 this.out = new ObjectOutputStream(socket.getOutputStream());
