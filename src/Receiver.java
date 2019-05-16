@@ -35,68 +35,72 @@ public class Receiver implements Runnable {
     public void run() {
         int commandType;
         Commands command;
-        while (!socket.isClosed()) {
-            try {
-                commandType = in.readInt();
-                command = Commands.valueOf(in.readUTF().trim().toUpperCase());
-                if (commandType == 0) {
-                    switch (command) {
-                        case HELP:
-                            writeAnswer(CollectionCommander.help());
-                            break;
-                        case REMOVE_FIRST:
-                            writeAnswer(CollectionCommander.removeFirst());
-                            break;
-                        case SHOW:
-                            writeAnswer(CollectionCommander.show());
-                            break;
-                        case INFO:
-                            writeAnswer(CollectionCommander.info());
-                            break;
-                        case QUIT:
-                            System.out.println("Client disconnected");
-                            socket.close();
-                            break;
-                    }
-                } else if (commandType == 2) {
-                    Cloud cloud;
-                    try {
-                        cloud = (Cloud) in.readObject();
+        try {
+            while (!socket.isClosed()) {
+                try {
+                    commandType = in.readInt();
+                    command = Commands.valueOf(in.readUTF().trim().toUpperCase());
+                    if (commandType == 0) {
                         switch (command) {
-                            case REMOVE:
-                                writeAnswer(CollectionCommander.removeElement(cloud));
+                            case HELP:
+                                writeAnswer(CollectionCommander.help());
                                 break;
-                            case ADD:
-                                writeAnswer(CollectionCommander.addElement(cloud));
+                            case REMOVE_FIRST:
+                                writeAnswer(CollectionCommander.removeFirst());
                                 break;
-                            case REMOVE_ALL:
-                                writeAnswer(CollectionCommander.removeAll(cloud));
+                            case SHOW:
+                                writeAnswer(CollectionCommander.show());
+                                break;
+                            case INFO:
+                                writeAnswer(CollectionCommander.info());
+                                break;
+                            case QUIT:
+                                System.out.println("Client disconnected");
+                                socket.close();
                                 break;
                         }
-                    } catch (ClassNotFoundException e) {
-                        writeAnswer("Class not found");
-                    }
-                } else {
-                    String fileLines;
-                    try {
-                        fileLines = in.readUTF();
-                        //System.out.println("file: " + fileLines);
-                        Type queueType = new TypeToken<PriorityBlockingQueue<Cloud>>() {
-                        }.getType();
-                        PriorityBlockingQueue<Cloud> queue = gson.fromJson(fileLines, queueType);
-                        writeAnswer(CollectionCommander.importCollection(queue));
-                    } catch (JsonSyntaxException e) {
-                        writeAnswer("Invalid JSON");
-                    } catch (IOException e) {
-                        writeAnswer("IO Exception");
-                    }
+                    } else if (commandType == 2) {
+                        Cloud cloud;
+                        try {
+                            cloud = (Cloud) in.readObject();
+                            switch (command) {
+                                case REMOVE:
+                                    writeAnswer(CollectionCommander.removeElement(cloud));
+                                    break;
+                                case ADD:
+                                    writeAnswer(CollectionCommander.addElement(cloud));
+                                    break;
+                                case REMOVE_ALL:
+                                    writeAnswer(CollectionCommander.removeAll(cloud));
+                                    break;
+                            }
+                        } catch (ClassNotFoundException e) {
+                            writeAnswer("Class not found");
+                        }
+                    } else {
+                        String fileLines;
+                        try {
+                            fileLines = in.readUTF();
+                            //System.out.println("file: " + fileLines);
+                            Type queueType = new TypeToken<PriorityBlockingQueue<Cloud>>() {
+                            }.getType();
+                            PriorityBlockingQueue<Cloud> queue = gson.fromJson(fileLines, queueType);
+                            writeAnswer(CollectionCommander.importCollection(queue));
+                        } catch (JsonSyntaxException e) {
+                            writeAnswer("Invalid JSON");
+                        } catch (IOException e) {
+                            writeAnswer("IO Exception");
+                        }
 
+                    }
+                } catch (IllegalArgumentException e) {
+                    writeAnswer("No such command");
+                } catch (IOException e) {
+                    writeAnswer("IO Exception");
                 }
-            } catch (IllegalArgumentException e) {
-                writeAnswer("No such command");
-            } catch (IOException e) {
-                writeAnswer("IO Exception");
             }
+        } catch (Exception e) {
+            System.out.println("Client closed");
         }
     }
 
@@ -106,7 +110,14 @@ public class Receiver implements Runnable {
             out.writeUTF(answer);
             out.flush();
         } catch (IOException ex) {
-            System.out.println("IO Exception when writing to channel");
+            //ex.printStackTrace();
+            //System.out.println("IO Exception when writing to channel");
+            try {
+                socket.close();
+                System.out.println("Client disconnected");
+            } catch (IOException e) {
+                System.out.println("Exception closing socket");
+            }
         }
     }
 }

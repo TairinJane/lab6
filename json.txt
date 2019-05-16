@@ -1,1 +1,28 @@
-[{}]
+[
+  {
+    "nickname": "ImportCloud1",
+    "speed": 35,
+    "color": "white",
+    "X": 0,
+    "Y": 0,
+    "Z": 0,
+    "rider": {
+      "name": "Troll",
+      "location": "forest",
+      "mood": "normal"
+    }
+  },
+  {
+    "nickname": "ImportCloud2",
+    "speed": 86,
+    "color": "white",
+    "X": 0,
+    "Y": 0,
+    "Z": 0,
+    "rider": {
+      "name": "Troll",
+      "location": "forest",
+      "mood": "normal"
+    }
+  }
+]

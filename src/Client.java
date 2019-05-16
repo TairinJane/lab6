@@ -4,6 +4,7 @@ import com.google.gson.JsonSyntaxException;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.net.PortUnreachableException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.nio.file.Files;
@@ -26,7 +27,7 @@ public class Client implements Runnable {
             try {
                 this.socket = new Socket("localhost", port);
                 connected = true;
-                System.out.println("Connected to server on port 1600");
+                System.out.println("Connected to server on port " + PORT);
                 this.out = new ObjectOutputStream(socket.getOutputStream());
                 this.in = new DataInputStream(socket.getInputStream());
                 //System.out.println(in.readUTF());
@@ -177,7 +178,7 @@ public class Client implements Runnable {
             try {
                 this.socket = new Socket("localhost", PORT);
                 connected = true;
-                System.out.println("Connected to server on port 1600");
+                System.out.println("Connected to server on port " + PORT);
                 this.out = new ObjectOutputStream(socket.getOutputStream());
                 this.in = new DataInputStream(socket.getInputStream());
                 this.console = new Scanner(System.in);
