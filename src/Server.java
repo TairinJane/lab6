@@ -6,6 +6,8 @@ import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class Server implements Runnable {
@@ -18,6 +20,7 @@ public class Server implements Runnable {
     @Override
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            Executor exec = Executors.newCachedThreadPool();
             if (Files.exists(Paths.get("outputCollection.txt"))) {
                 Type queueType = new TypeToken<PriorityBlockingQueue<Cloud>>() {
                 }.getType();
@@ -26,8 +29,9 @@ public class Server implements Runnable {
             }
             System.out.println("Server created, waiting for clients...");
             while (!serverSocket.isClosed()) {
-                new Thread(new Receiver(serverSocket.accept())).start();
-                System.out.println("New client connected.");
+                exec.execute(new Receiver(serverSocket.accept()));
+                //new Thread(new Receiver(serverSocket.accept())).start();
+                System.out.println("New client connected");
             }
         } catch (IOException e) {
             //e.printStackTrace();
