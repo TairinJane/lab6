@@ -4,9 +4,9 @@ import com.google.gson.JsonSyntaxException;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.net.PortUnreachableException;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,57 +19,33 @@ public class Client implements Runnable {
     private Socket socket;
     private Scanner console;
     private final int PORT;
+    private final String HOST;
 
-    Client(int port) {
+    Client(String host, int port) {
         this.PORT = port;
-        boolean connected = false;
-        while (!connected) {
-            try {
-                this.socket = new Socket("localhost", port);
-                connected = true;
-                System.out.println("Connected to server on port " + PORT);
-                this.out = new ObjectOutputStream(socket.getOutputStream());
-                this.in = new DataInputStream(socket.getInputStream());
-                //System.out.println(in.readUTF());
-                this.console = new Scanner(System.in);
-            } catch (IOException e) {
-                System.out.println("Server is not available");
-                System.out.println("Trying to connect again in 5 seconds...");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e1) {
-                    System.out.println("Exception in sleeping");
-                }
-            }
-        }
+        this.HOST = host;
     }
 
     public void run() {
+        if (!tryReconnect()) return;
         String command, obj, answer;
         int commandType;
         try {
             System.out.println(in.readUTF());
+        } catch (SocketException e) {
+            tryReconnect();
         } catch (IOException e) {
             System.out.println("Exception while reading help. HELP");
         }
         try {
             do {
                 System.out.println("Print your request");
-            /*try {
-                if (console.hasNext() && (System.in == null)) {
-                    System.out.println("Closing client...");
-                    socket.close();
-                }
-            } catch (IOException e) {
-                System.out.println("IO Exception while closing client");
-            }*/
                 command = console.next();
                 if (command.equalsIgnoreCase("quit")) {
                     closeClient();
                     break;
                 }
                 obj = console.nextLine().trim();
-                //System.out.println("Got request: " + command);
                 if (obj.equals("")) {
                     commandType = 0;
                     writeRequest(commandType, command);
@@ -88,7 +64,6 @@ public class Client implements Runnable {
                             String fileLines = String.join("\n", Files.readAllLines(filePath));
                             writeRequest(commandType, command, fileLines);
                             out.flush();
-                            //System.out.println("Command out");
                         } catch (IOException e) {
                             System.out.println("IO Exception while reading file");
                             continue;
@@ -105,7 +80,6 @@ public class Client implements Runnable {
                     try {
                         Cloud cloud = gson.fromJson(obj, Cloud.class);
                         writeRequest(commandType, command, cloud);
-                        //System.out.println("Command out");
                     } catch (JsonSyntaxException e) {
                         System.out.println("Invalid json." +
                                 "\nJson must look like: {\"nickname\": \"Cloud0\", \"speed\": 10, " +
@@ -122,8 +96,6 @@ public class Client implements Runnable {
                 } catch (IOException e) {
                     System.out.println("IO Exception while receiving answer from server");
                 }
-                //System.out.println(command + "*" + obj + "*");
-
             } while (true);
         } catch (Exception e) {
             closeClient();
@@ -131,7 +103,7 @@ public class Client implements Runnable {
     }
 
     public static void main(String[] args) {
-        new Thread(new Client(1600)).start();
+        new Thread(new Client("localhost", 1600)).start();
     }
 
     private void writeRequest(int commandType, String command, Cloud cloud) {
@@ -172,16 +144,19 @@ public class Client implements Runnable {
         }
     }
 
-    private void tryReconnect() {
+    private boolean tryReconnect() {
         boolean connected = false;
         while (!connected) {
             try {
-                this.socket = new Socket("localhost", PORT);
+                this.socket = new Socket(HOST, PORT);
                 connected = true;
                 System.out.println("Connected to server on port " + PORT);
                 this.out = new ObjectOutputStream(socket.getOutputStream());
                 this.in = new DataInputStream(socket.getInputStream());
                 this.console = new Scanner(System.in);
+            } catch (UnknownHostException e) {
+                System.out.println("Host doesn't exist");
+                return false;
             } catch (IOException e) {
                 System.out.println("Server is not available");
                 System.out.println("Trying to connect again in 5 seconds...");
@@ -192,6 +167,7 @@ public class Client implements Runnable {
                 }
             }
         }
+        return true;
     }
 
     private void closeClient() {

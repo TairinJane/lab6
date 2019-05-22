@@ -10,8 +10,6 @@ import java.net.Socket;
 import java.util.concurrent.PriorityBlockingQueue;
 
 public class Receiver implements Runnable {
-    //    private SelectionKey key;
-//    private SocketChannel channel;
     private Socket socket;
     private ObjectInputStream in;
     private DataOutputStream out;
@@ -19,8 +17,6 @@ public class Receiver implements Runnable {
     private static Gson gson = new Gson();
 
     Receiver(Socket socket) {
-//        this.key = key;
-//        this.channel = (SocketChannel) key.channel();
         this.socket = socket;
         try {
             this.in = new ObjectInputStream(socket.getInputStream());
@@ -58,6 +54,8 @@ public class Receiver implements Runnable {
                                 System.out.println("Client disconnected");
                                 socket.close();
                                 break;
+                            default:
+                                writeAnswer("No such command");
                         }
                     } else if (commandType == 2) {
                         Cloud cloud;
@@ -73,6 +71,8 @@ public class Receiver implements Runnable {
                                 case REMOVE_ALL:
                                     writeAnswer(CollectionCommander.removeAll(cloud));
                                     break;
+                                default:
+                                    writeAnswer("No such command");
                             }
                         } catch (ClassNotFoundException e) {
                             writeAnswer("Class not found");
@@ -81,7 +81,6 @@ public class Receiver implements Runnable {
                         String fileLines;
                         try {
                             fileLines = in.readUTF();
-                            //System.out.println("file: " + fileLines);
                             Type queueType = new TypeToken<PriorityBlockingQueue<Cloud>>() {
                             }.getType();
                             PriorityBlockingQueue<Cloud> queue = gson.fromJson(fileLines, queueType);
@@ -106,12 +105,9 @@ public class Receiver implements Runnable {
 
     private void writeAnswer(String answer) {
         try {
-            //channel.write(ByteBuffer.wrap(answer.getBytes()));
             out.writeUTF(answer);
             out.flush();
         } catch (IOException ex) {
-            //ex.printStackTrace();
-            //System.out.println("IO Exception when writing to channel");
             try {
                 socket.close();
                 System.out.println("Client disconnected");

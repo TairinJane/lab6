@@ -5,17 +5,18 @@ public class Main {
                 int port = Integer.parseInt(args[1]);
                 new Thread(new Server(port)).start();
             } catch (NumberFormatException e) {
-                System.out.println("Usage: (server | client) <port>");
+                System.out.println("Usage: (server | client <host>) <port>");
             }
         } else if (args[0].equalsIgnoreCase("client")) {
             try {
-                int port = Integer.parseInt(args[1]);
-                new Thread(new Client(port)).start();
+                String host = args[1];
+                int port = Integer.parseInt(args[2]);
+                new Thread(new Client(host, port)).start();
             } catch (NumberFormatException e) {
-                System.out.println("Usage: (server | client) <port>");
+                System.out.println("Usage: (server | client <host>) <port>");
             }
         } else {
-            System.out.println("Usage: (server | client) <port>");
+            System.out.println("Usage: (server | client <host>) <port>");
         }
     }
 }
